@@ -1,5 +1,5 @@
 Original repository can be found at https://github.com/gmcgarry/vga
 
-# Overview
+# VGA + MCU signalling
 
-Driving VGA displays from microcontrollers
+Driving VGA displays from microcontrollers.  See the source code for pin configurations.
