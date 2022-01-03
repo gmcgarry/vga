@@ -32,9 +32,9 @@
     ; 2 sync pulse
     
     
-    PROCESSOR   16F630
+    PROCESSOR   P16F630
 
-#include <xc.inc>
+include "p16f630.inc"
 
 config FOSC = HS	; Oscillator Selection bits (internal RC oscillator)
 config WDTE = OFF       ; Watchdog Timer (WDT disabled)
@@ -52,13 +52,13 @@ config CPD = OFF        ; Data Code Protection bit (Data memory code protection 
 ; RC2 = RGB
 ; RC0 = HSYNC
    
-    RGB equ 2
-    VSYNC equ 1
-    HSYNC equ 0
+RGB		EQU 2
+VSYNC		EQU 1
+HSYNC		EQU 0
 
-TopCount	equ	 0x20
-BotCount	equ	 0x21
-LCount0	equ	 0x22
+TopCount	EQU	 0x20
+BotCount	EQU	 0x21
+LCount0		EQU	 0x22
 
 blank	macro
 	bcf     PORTC, RGB
@@ -77,22 +77,16 @@ HSync	macro
 	bsf     PORTC, HSYNC	; 19
 	endm
 
-    PSECT   Por_Vec,global,class=CODE,delta=2
-    global  ResetVec
-ResetVec:
-    PAGESEL Start
+Reset:
     goto    Start
     
-    PSECT   Isr_Vec,global,class=CODE,delta=2
-    
-    PSECT   MainCode,global,class=CODE,delta=2
 Start:
 	; oscillator calibration
-	BANKSEL	OSCCAL
+	BANKSEL	OSCCAL		; select bank 1
 	call	0x3FF
 	movwf	OSCCAL
 
-	BANKSEL PORTC 
+	BANKSEL PORTC 		; select bank 0
 	clrf    PORTC
 	BANKSEL TRISC		; select bank 1
 	clrf   	TRISC		; outputs
@@ -226,4 +220,4 @@ Delay10mkS:			; 1,2
 	call	Delay1uS
 	return			; 4,5
 	
-	END     Start
+	END

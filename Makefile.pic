@@ -1,0 +1,14 @@
+SRCS = \
+	pic16f630_4mhz.asm \
+	pic16f630_20mhz.asm
+
+all:	$(SRCS:.asm=.hex)
+
+clean:
+	$(RM) $(SRCS:.asm=.hex) $(SRCS:.asm=.cod) $(SRCS:.asm=.lst)
+
+.SUFFIXES:	.asm .hex
+
+.asm.hex:
+#	pasm-pic -o $@ $<
+	gpasm -o $@ $<

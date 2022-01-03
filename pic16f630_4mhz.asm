@@ -10,34 +10,34 @@
 ;	(VGA: Video mode 640x480  HSync=-31,4KHz 1/HSync=32cycles
 ;				  VSync=-60Hz 1/VSync=16667cycles
 
-    ; 640x480 (clock 25.175MHz)
+	; 640x480 (clock 25.175MHz)
 
-    ; H: scanline 31.777us (31.468MHz)
-    ; H: data 25.42us
-    ; H: back porch 1.906us
-    ; H: pulse 3.813us
-    ; H: front porch 0.635us
+	; H: scanline 31.777us (31.468MHz)
+	; H: data 25.42us
+	; H: back porch 1.906us
+	; H: pulse 3.813us
+	; H: front porch 0.635us
 
-    ; V: frame 16.68ms (60Hz)	[525 lines]
-    ; V: data 15.253ms		[480 lines + 8 lines top/bottom border]
-    ; V: front porch 0.317ms	[2 lines]
-    ; V: pulse 0.063ms		[2 lines]
-    ; V: back porch 1.0486ms	[25 lines]
+	; V: frame 16.68ms (60Hz)	[525 lines]
+	; V: data 15.253ms		[480 lines + 8 lines top/bottom border]
+	; V: front porch 0.317ms	[2 lines]
+	; V: pulse 0.063ms		[2 lines]
+	; V: back porch 1.0486ms	[25 lines]
 
-    ; Frame:
-    ; 25 back porch 
-    ; 8 border scan
-    ; 176 blank
-    ; 105 text
-    ; 199 blank
-    ; 8 border scan
-    ; 2 front porch
-    ; 2 sync pulse
-    
-    
-    PROCESSOR   16F630
+	; Frame:
+	; 25 back porch 
+	; 8 border scan
+	; 176 blank
+	; 105 text
+	; 199 blank
+	; 8 border scan
+	; 2 front porch
+	; 2 sync pulse
+	
+	
+	PROCESSOR   P16F630
 
-#include <xc.inc>
+include "p16f630.inc"
 
 config FOSC = INTRCIO   ; Oscillator Selection bits (internal RC oscillator)
 config WDTE = OFF       ; Watchdog Timer (WDT disabled)
@@ -55,23 +55,24 @@ config CPD = OFF        ; Data Code Protection bit (Data memory code protection 
 ; RC2 = RGB
 ; RC0 = HSYNC
    
-    RGB equ 2
-    VSYNC equ 1
-    HSYNC equ 0
+RGB EQU 2
+VSYNC EQU 1
+HSYNC EQU 0
 
-TopCount	equ	 0x20
-BotCount	equ	 0x21
-LCount0	equ	 0x22
-LCount1	equ	 0x23
-LCount2	equ	 0x24
-LCount3	equ	 0x25
-LCount4	equ	 0x26
-LCount5	equ	 0x27
-LCount6	equ	 0x28
+TopCount	EQU	 0x20
+BotCount	EQU	 0x21
+LCount0	EQU	 0x22
+LCount1	EQU	 0x23
+LCount2	EQU	 0x24
+LCount3	EQU	 0x25
+LCount4	EQU	 0x26
+LCount5	EQU	 0x27
+LCount6	EQU	 0x28
 
 blank	macro
 	bcf     PORTC, RGB
 	endm
+
 point	macro
 	bsf     PORTC, RGB
 	endm
@@ -82,22 +83,17 @@ HSync	macro
 	bsf     PORTC, HSYNC  ; horiz sync
 	endm
 
-    PSECT   Por_Vec,global,class=CODE,delta=2
-    global  ResetVec
-ResetVec:
-    PAGESEL Start
-    goto    Start
-    
-    PSECT   Isr_Vec,global,class=CODE,delta=2
-    
-    PSECT   MainCode,global,class=CODE,delta=2
+	ORG	0x000
+Reset:
+	goto    Start
+	
 Start:
 	; oscillator calibration
-	BANKSEL	OSCCAL
+	BANKSEL	OSCCAL		; select bank 1
 	call	0x3FF
 	movwf	OSCCAL
 
-	BANKSEL PORTC 
+	BANKSEL PORTC 		; select bank 0
 	clrf    PORTC
 	BANKSEL TRISC		; select bank 1
 	clrf   	TRISC		; outputs
@@ -185,4 +181,4 @@ Delay10mkS:
 	nop
 	return
 
-	END     Start
+	END
